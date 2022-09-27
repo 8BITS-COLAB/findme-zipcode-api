@@ -1,6 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"net/http"
+	"os"
+
 	"github.com/8bits/findme/core"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -18,7 +22,12 @@ func main() {
 	app.Use(recover.New())
 	app.Use(compress.New())
 
+	app.Get("/_health_check", func(ctx *fiber.Ctx) error {
+		return ctx.SendStatus(http.StatusOK)
+	})
 	v1.Get("/:zipcode", core.Handle)
 
-	app.Listen(":4000")
+	addr := fmt.Sprintf(":%s", os.Getenv("PORT"))
+
+	app.Listen(addr)
 }
